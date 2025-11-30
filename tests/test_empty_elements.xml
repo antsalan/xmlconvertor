@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<records>
+    <record>
+        <field1>Value 1</field1>
+        <field2></field2>
+        <field3>Value 3</field3>
+    </record>
+    <record>
+        <field1></field1>
+        <field2>Value 2</field2>
+        <field3></field3>
+    </record>
+</records>

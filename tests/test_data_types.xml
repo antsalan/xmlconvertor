@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metrics>
+    <metric>
+        <name>Integer</name>
+        <value>42</value>
+    </metric>
+    <metric>
+        <name>Float</name>
+        <value>3.14159</value>
+    </metric>
+    <metric>
+        <name>Boolean True</name>
+        <value>true</value>
+    </metric>
+    <metric>
+        <name>Boolean False</name>
+        <value>false</value>
+    </metric>
+    <metric>
+        <name>String</name>
+        <value>Hello World</value>
+    </metric>
+    <metric>
+        <name>Negative</name>
+        <value>-123.45</value>
+    </metric>
+</metrics>

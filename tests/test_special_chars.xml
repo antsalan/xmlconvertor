@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+    <entry>
+        <text>Hello &amp; Goodbye</text>
+        <quote>&quot;Quoted Text&quot;</quote>
+        <symbols>&lt; Less Than &gt; Greater Than</symbols>
+    </entry>
+    <entry>
+        <text>Apostrophe&apos;s Test</text>
+        <quote>Regular text here</quote>
+        <symbols>100% complete</symbols>
+    </entry>
+</data>

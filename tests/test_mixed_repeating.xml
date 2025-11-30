@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+    <book id="B001">
+        <title>Python Guide</title>
+        <author>Smith</author>
+        <author>Jones</author>
+        <categories>
+            <category>Programming</category>
+            <category>Python</category>
+        </categories>
+    </book>
+</library>

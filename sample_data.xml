@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog>
+    <book id="1" category="programming">
+        <title>Python Programming</title>
+        <author>
+            <name>John Smith</name>
+            <email>john@example.com</email>
+            <country>USA</country>
+        </author>
+        <price currency="USD">29.99</price>
+        <tags>
+            <tag>programming</tag>
+            <tag>python</tag>
+            <tag>beginner</tag>
+        </tags>
+        <available>true</available>
+    </book>
+    <book id="2" category="data-science">
+        <title>Data Science Basics</title>
+        <author>
+            <name>Jane Doe</name>
+            <email>jane@example.com</email>
+        </author>
+        <price currency="USD">39.99</price>
+        <tags>
+            <tag>data-science</tag>
+            <tag>analytics</tag>
+        </tags>
+        <available>true</available>
+        <reviews>
+            <review>
+                <rating>5</rating>
+                <comment>Excellent book!</comment>
+            </review>
+            <review>
+                <rating>4</rating>
+                <comment>Very helpful</comment>
+            </review>
+        </reviews>
+    </book>
+    <book id="3" category="web">
+        <title>Web Development Guide</title>
+        <author>
+            <name>Bob Wilson</name>
+        </author>
+        <price currency="EUR">25.00</price>
+        <available>false</available>
+    </book>
+</catalog>

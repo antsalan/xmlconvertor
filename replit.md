@@ -38,13 +38,17 @@ python xml_to_excel.py data.xml output.xlsx
 - **Repeating elements** - Multiple rows generated for repeated XML elements (Cartesian product)
 - **Attribute support** - XML attributes included with `@` prefix (e.g., `book.@id`)
 - **Missing field handling** - Fills missing fields with blank/None values
-- **Deep nesting support** - Handles arbitrarily deep XML structures
+- **Deep nesting support** - Handles arbitrarily deep XML structures (5+ levels)
+- **Data type conversion** - Automatically converts integers, floats, booleans
+- **Special character handling** - Properly decodes XML entities
 
 ## Project Structure
 ```
 /
 ├── app.py              # Flask web application
 ├── xml_to_excel.py     # Core conversion script (CLI + library)
+├── requirements.txt    # Python dependencies
+├── README.md           # Complete documentation with local usage instructions
 ├── templates/
 │   └── index.html      # Web UI template
 ├── static/
@@ -52,9 +56,32 @@ python xml_to_excel.py data.xml output.xlsx
 │   │   └── style.css   # Custom styles
 │   └── js/
 │       └── app.js      # Frontend JavaScript
+├── tests/
+│   ├── run_tests.py    # Comprehensive test suite (12 tests)
+│   └── test_*.xml      # Test XML files for various edge cases
 ├── sample_data.xml     # Sample XML file for testing
 └── replit.md           # This documentation
 ```
+
+## Test Suite
+Run the comprehensive test suite:
+```bash
+python tests/run_tests.py
+```
+
+Tests cover:
+- Simple XML structures
+- Nested elements (multi-level)
+- XML attributes with @ prefix
+- Repeating elements (row expansion)
+- Cartesian product (mixed repeating)
+- Missing/optional fields
+- Deep nesting (5+ levels)
+- Empty elements
+- Special characters (&, <, >)
+- Data type conversion
+- Excel file generation
+- Sample data validation
 
 ## Dependencies
 - Python 3.6+
@@ -68,6 +95,10 @@ python xml_to_excel.py data.xml output.xlsx
 - `ATTRIBUTE_PREFIX` - Prefix for attribute columns (default: "@")
 
 ## Recent Changes
+- 2025-11-30: Added comprehensive test suite with 12 automated tests
+  - Created test XML files covering all edge cases
+  - Verified Cartesian product logic for mixed repeating elements
+  - Added README.md with local usage instructions
 - 2025-11-30: Added professional web frontend with Flask
   - Drag-and-drop file upload with visual feedback
   - Data preview table with scrolling and column headers

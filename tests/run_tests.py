@@ -425,6 +425,100 @@ def test_sample_data():
     
     return TestResult("Sample Data", True, "All checks passed", checks)
 
+
+def test_web_api_convert():
+    """Test the Flask /convert API endpoint."""
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from app import app
+        
+        checks = []
+        
+        with app.test_client() as client:
+            with open("sample_data.xml", "rb") as f:
+                response = client.post(
+                    "/convert",
+                    data={"file": (f, "sample_data.xml")},
+                    content_type="multipart/form-data"
+                )
+            
+            if response.status_code == 200:
+                checks.append("POST /convert returns 200: PASS")
+            else:
+                return TestResult("Web API Convert", False, f"Expected 200, got {response.status_code}")
+            
+            data = response.get_json()
+            
+            if data.get("success") == True:
+                checks.append("Response indicates success: PASS")
+            else:
+                return TestResult("Web API Convert", False, f"Response not successful: {data}")
+            
+            if data.get("total_rows") == 8:
+                checks.append("Total rows = 8: PASS")
+            else:
+                return TestResult("Web API Convert", False, f"Expected 8 rows, got {data.get('total_rows')}")
+            
+            if data.get("total_columns") == 12:
+                checks.append("Total columns = 12: PASS")
+            else:
+                checks.append(f"Columns = {data.get('total_columns')}")
+            
+            if data.get("file_id"):
+                checks.append(f"File ID generated: PASS")
+            else:
+                return TestResult("Web API Convert", False, "No file_id in response")
+            
+            if len(data.get("preview", [])) > 0:
+                checks.append(f"Preview data returned ({len(data.get('preview', []))} rows): PASS")
+            else:
+                return TestResult("Web API Convert", False, "No preview data")
+        
+        return TestResult("Web API Convert", True, "All checks passed", checks)
+    except Exception as e:
+        return TestResult("Web API Convert", False, f"Exception: {str(e)}")
+
+
+def test_web_api_errors():
+    """Test the Flask API error handling."""
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from app import app
+        
+        checks = []
+        
+        with app.test_client() as client:
+            response = client.post("/convert", data={})
+            if response.status_code == 400:
+                checks.append("Missing file returns 400: PASS")
+            else:
+                return TestResult("Web API Errors", False, f"Expected 400 for missing file, got {response.status_code}")
+            
+            from io import BytesIO
+            response = client.post(
+                "/convert",
+                data={"file": (BytesIO(b"not valid xml"), "test.xml")},
+                content_type="multipart/form-data"
+            )
+            if response.status_code == 400:
+                checks.append("Invalid XML returns 400: PASS")
+            else:
+                checks.append(f"Invalid XML status: {response.status_code}")
+            
+            response = client.post(
+                "/convert",
+                data={"file": (BytesIO(b"text content"), "test.txt")},
+                content_type="multipart/form-data"
+            )
+            if response.status_code == 400:
+                checks.append("Non-XML file returns 400: PASS")
+            else:
+                return TestResult("Web API Errors", False, f"Expected 400 for .txt file, got {response.status_code}")
+        
+        return TestResult("Web API Errors", True, "All checks passed", checks)
+    except Exception as e:
+        return TestResult("Web API Errors", False, f"Exception: {str(e)}")
+
 def main():
     """Run all tests and print results."""
     print("=" * 70)
@@ -445,6 +539,8 @@ def main():
         ("Data Type Conversion", test_data_types),
         ("Excel Output", test_excel_output),
         ("Sample Data File", test_sample_data),
+        ("Web API Convert", test_web_api_convert),
+        ("Web API Error Handling", test_web_api_errors),
     ]
     
     results = []

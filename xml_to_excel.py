@@ -196,50 +196,41 @@ def get_element_paths(element: ET.Element, parent_path: str = "") -> Dict[str, A
     return result
 
 
-def find_repeating_elements(element: ET.Element, path: str = "") -> Dict[str, List[ET.Element]]:
+def cartesian_product_rows(row_groups: List[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
     """
-    Find all repeating elements at each level of the XML tree.
+    Compute the Cartesian product of multiple row groups.
     
     Args:
-        element: The root XML element
-        path: Current path in the tree
+        row_groups: List of row group lists to combine
         
     Returns:
-        Dictionary mapping paths to lists of repeating elements
+        List of combined row dictionaries
     """
-    result = {}
-    tag = strip_namespace(element.tag)
-    current_path = f"{path}{PATH_DELIMITER}{tag}" if path else tag
+    if not row_groups:
+        return [OrderedDict()]
     
-    child_counts = {}
-    for child in element:
-        child_tag = strip_namespace(child.tag)
-        child_path = f"{current_path}{PATH_DELIMITER}{child_tag}"
-        child_counts[child_path] = child_counts.get(child_path, 0) + 1
+    if len(row_groups) == 1:
+        return row_groups[0]
     
-    for child_path, count in child_counts.items():
-        if count > 1:
-            if child_path not in result:
-                result[child_path] = []
-            for child in element:
-                if f"{current_path}{PATH_DELIMITER}{strip_namespace(child.tag)}" == child_path:
-                    result[child_path].append(child)
+    result = row_groups[0]
+    for next_group in row_groups[1:]:
+        new_result = []
+        for existing_row in result:
+            for new_row in next_group:
+                combined = OrderedDict(existing_row)
+                combined.update(new_row)
+                new_result.append(combined)
+        result = new_result
     
-    for child in element:
-        child_repeating = find_repeating_elements(child, current_path)
-        for k, v in child_repeating.items():
-            if k in result:
-                result[k].extend(v)
-            else:
-                result[k] = v
-    
-    return result
+    return result if result else [OrderedDict()]
 
 
 def flatten_element(element: ET.Element, parent_path: str = "") -> List[Dict[str, Any]]:
     """
     Flatten an XML element into a list of row dictionaries.
-    Handles repeating elements by creating multiple rows.
+    Handles repeating elements by creating multiple rows using Cartesian product.
+    All child groups (both directly repeating and non-repeating containers with
+    repeating descendants) are combined uniformly via Cartesian product.
     
     Args:
         element: The XML element to flatten
@@ -279,30 +270,34 @@ def flatten_element(element: ET.Element, parent_path: str = "") -> List[Dict[str
     repeating_paths = [path for path, elements in child_groups.items() if len(elements) > 1]
     non_repeating_paths = [path for path, elements in child_groups.items() if len(elements) == 1]
     
+    all_row_groups = []
+    
     for path in non_repeating_paths:
         child = child_groups[path][0]
         child_rows = flatten_element(child, current_path)
         if child_rows:
-            for key, value in child_rows[0].items():
-                base_data[key] = value
-    
-    if not repeating_paths:
-        return [base_data]
-    
-    rows = []
+            all_row_groups.append(child_rows)
     
     for rep_path in repeating_paths:
+        path_rows = []
         for child in child_groups[rep_path]:
             child_rows = flatten_element(child, current_path)
-            for child_row in child_rows:
-                row = OrderedDict(base_data)
-                row.update(child_row)
-                rows.append(row)
+            path_rows.extend(child_rows)
+        if path_rows:
+            all_row_groups.append(path_rows)
     
-    if not rows:
+    if not all_row_groups:
         return [base_data]
     
-    return rows
+    combined = cartesian_product_rows(all_row_groups)
+    
+    result = []
+    for combo in combined:
+        row = OrderedDict(base_data)
+        row.update(combo)
+        result.append(row)
+    
+    return result if result else [base_data]
 
 
 def get_record_elements(root: ET.Element) -> Tuple[str, List[ET.Element]]:
@@ -322,7 +317,7 @@ def get_record_elements(root: ET.Element) -> Tuple[str, List[ET.Element]]:
         child_counts[tag] = child_counts.get(tag, 0) + 1
     
     if child_counts:
-        most_common_tag = max(child_counts, key=child_counts.get)
+        most_common_tag = max(child_counts, key=lambda k: child_counts[k])
         records = [child for child in root if strip_namespace(child.tag) == most_common_tag]
         return most_common_tag, records
     

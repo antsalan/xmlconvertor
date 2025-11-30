@@ -1,9 +1,22 @@
 # XML to Excel Converter
 
 ## Overview
-A flexible Python command-line script that dynamically parses any XML structure and converts it to an Excel (.xlsx) file. The script automatically adapts to varying, nested, or inconsistent tag structures.
+A flexible Python application that dynamically parses any XML structure and converts it to an Excel (.xlsx) file. Features both a command-line interface and a professional web UI with drag-and-drop upload, data preview, and instant download.
 
-## How to Run
+## Web Interface
+
+Start the web app:
+```bash
+python app.py
+```
+
+Then open your browser to view the application. The web interface provides:
+- Drag & drop file upload
+- Real-time conversion with progress indicator
+- Data preview table before download
+- One-click Excel file download
+
+## Command Line Usage
 
 ```bash
 python xml_to_excel.py <input.xml> [output.xlsx]
@@ -22,7 +35,7 @@ python xml_to_excel.py data.xml output.xlsx
 ## Features
 - **Dynamic XML parsing** - Adapts to any tag structure automatically
 - **Dot-notation flattening** - Nested elements become column headers (e.g., `book.author.name`)
-- **Repeating elements** - Multiple rows generated for repeated XML elements
+- **Repeating elements** - Multiple rows generated for repeated XML elements (Cartesian product)
 - **Attribute support** - XML attributes included with `@` prefix (e.g., `book.@id`)
 - **Missing field handling** - Fills missing fields with blank/None values
 - **Deep nesting support** - Handles arbitrarily deep XML structures
@@ -30,14 +43,22 @@ python xml_to_excel.py data.xml output.xlsx
 ## Project Structure
 ```
 /
-├── xml_to_excel.py    # Main conversion script
-├── sample_data.xml    # Sample XML file for testing
-├── output.xlsx        # Generated Excel output (from test run)
-└── replit.md          # This documentation
+├── app.py              # Flask web application
+├── xml_to_excel.py     # Core conversion script (CLI + library)
+├── templates/
+│   └── index.html      # Web UI template
+├── static/
+│   ├── css/
+│   │   └── style.css   # Custom styles
+│   └── js/
+│       └── app.js      # Frontend JavaScript
+├── sample_data.xml     # Sample XML file for testing
+└── replit.md           # This documentation
 ```
 
 ## Dependencies
 - Python 3.6+
+- Flask (web interface)
 - pandas
 - openpyxl
 
@@ -47,7 +68,12 @@ python xml_to_excel.py data.xml output.xlsx
 - `ATTRIBUTE_PREFIX` - Prefix for attribute columns (default: "@")
 
 ## Recent Changes
+- 2025-11-30: Added professional web frontend with Flask
+  - Drag-and-drop file upload with visual feedback
+  - Data preview table with scrolling and column headers
+  - Download button for converted Excel files
+  - Responsive design with Bootstrap 5
 - 2025-11-30: Initial creation of XML to Excel converter script
   - Full dynamic XML parsing with dot-notation flattening
-  - Support for repeating elements, attributes, and deeply nested structures
-  - Comprehensive inline documentation with usage examples
+  - Cartesian product for repeating elements at any nesting level
+  - Support for attributes and deeply nested structures

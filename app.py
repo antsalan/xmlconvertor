@@ -67,8 +67,8 @@ def convert():
         
         os.remove(temp_xml)
         
-        original_filename = secure_filename(file.filename)
-        base_name = os.path.splitext(original_filename)[0]
+        original_filename = secure_filename(file.filename or 'converted')
+        base_name = os.path.splitext(original_filename)[0] or 'converted'
         
         converted_files[file_id] = {
             'path': temp_xlsx,

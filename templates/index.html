@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML to Excel Converter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="min-vh-100 d-flex flex-column">
+        <nav class="navbar navbar-dark bg-primary">
+            <div class="container">
+                <span class="navbar-brand mb-0 h1">
+                    <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+                    XML to Excel Converter
+                </span>
+            </div>
+        </nav>
+
+        <main class="flex-grow-1 py-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="card shadow-lg border-0 mb-4">
+                            <div class="card-body p-5">
+                                <div class="text-center mb-4">
+                                    <h2 class="fw-bold text-primary mb-3">Convert XML to Excel</h2>
+                                    <p class="text-muted lead">
+                                        Upload any XML file and instantly convert it to a structured Excel spreadsheet.
+                                        Supports nested elements, attributes, and complex structures.
+                                    </p>
+                                </div>
+
+                                <div id="upload-zone" class="upload-zone mb-4">
+                                    <div class="upload-content">
+                                        <i class="bi bi-cloud-arrow-up display-1 text-primary mb-3"></i>
+                                        <h4 class="mb-2">Drag & Drop your XML file here</h4>
+                                        <p class="text-muted mb-3">or click to browse</p>
+                                        <input type="file" id="file-input" accept=".xml" class="d-none">
+                                        <button class="btn btn-primary btn-lg px-5" onclick="document.getElementById('file-input').click()">
+                                            <i class="bi bi-folder2-open me-2"></i>Choose File
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="file-info" class="d-none">
+                                    <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded mb-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-file-earmark-code text-primary fs-3 me-3"></i>
+                                            <div>
+                                                <strong id="file-name">filename.xml</strong>
+                                                <div class="text-muted small" id="file-size">0 KB</div>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-outline-danger btn-sm" onclick="clearFile()">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+                                    <button id="convert-btn" class="btn btn-success btn-lg w-100" onclick="convertFile()">
+                                        <i class="bi bi-arrow-repeat me-2"></i>Convert to Excel
+                                    </button>
+                                </div>
+
+                                <div id="progress-section" class="d-none text-center py-4">
+                                    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                                        <span class="visually-hidden">Converting...</span>
+                                    </div>
+                                    <h5 class="text-muted">Converting your file...</h5>
+                                    <p class="text-muted small">This may take a moment for large files</p>
+                                </div>
+
+                                <div id="error-section" class="d-none">
+                                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                        <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
+                                        <div id="error-message">An error occurred</div>
+                                    </div>
+                                    <button class="btn btn-outline-primary w-100" onclick="resetUpload()">
+                                        <i class="bi bi-arrow-counterclockwise me-2"></i>Try Again
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="result-section" class="d-none">
+                            <div class="card shadow-lg border-0 mb-4">
+                                <div class="card-header bg-success text-white py-3">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <h5 class="mb-0">
+                                                <i class="bi bi-check-circle-fill me-2"></i>
+                                                Conversion Complete!
+                                            </h5>
+                                        </div>
+                                        <div class="text-end">
+                                            <span id="stats-rows" class="badge bg-light text-success me-2">0 rows</span>
+                                            <span id="stats-cols" class="badge bg-light text-success">0 columns</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="d-flex flex-wrap gap-2 mb-4">
+                                        <a id="download-btn" href="#" class="btn btn-success btn-lg flex-grow-1">
+                                            <i class="bi bi-download me-2"></i>Download Excel File
+                                        </a>
+                                        <button class="btn btn-outline-primary btn-lg" onclick="resetUpload()">
+                                            <i class="bi bi-plus-lg me-2"></i>Convert Another
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="border rounded">
+                                        <div class="d-flex align-items-center justify-content-between bg-light p-3 border-bottom">
+                                            <h6 class="mb-0">
+                                                <i class="bi bi-table me-2"></i>Data Preview
+                                            </h6>
+                                            <span id="preview-info" class="text-muted small"></span>
+                                        </div>
+                                        <div class="table-responsive" style="max-height: 400px; overflow: auto;">
+                                            <table class="table table-hover table-striped mb-0" id="preview-table">
+                                                <thead class="table-dark sticky-top">
+                                                    <tr id="preview-header"></tr>
+                                                </thead>
+                                                <tbody id="preview-body"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="bi bi-lightbulb text-warning me-2"></i>Features
+                                </h5>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <div class="d-flex align-items-start">
+                                            <i class="bi bi-diagram-3 text-primary me-2 mt-1"></i>
+                                            <div>
+                                                <strong>Nested Elements</strong>
+                                                <p class="text-muted small mb-0">Automatically flattens deep XML structures with dot-notation paths</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="d-flex align-items-start">
+                                            <i class="bi bi-arrow-repeat text-primary me-2 mt-1"></i>
+                                            <div>
+                                                <strong>Repeating Elements</strong>
+                                                <p class="text-muted small mb-0">Creates separate rows for repeated XML elements</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="d-flex align-items-start">
+                                            <i class="bi bi-tags text-primary me-2 mt-1"></i>
+                                            <div>
+                                                <strong>Attribute Support</strong>
+                                                <p class="text-muted small mb-0">Includes XML attributes as separate columns with @ prefix</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="bg-dark text-light py-3">
+            <div class="container text-center">
+                <small class="text-muted">XML to Excel Converter - Powered by Python & Flask</small>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
